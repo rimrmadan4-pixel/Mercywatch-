@@ -1,220 +1,252 @@
-<!DOCTYPE html><html lang="en">
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
   <title>Mercy Watch – Mobile Hospital</title>
+
+  <!-- Icon & Share colors -->
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='32' fill='%238b5cf6'/%3E%3Cpath d='M32 55s-15-10-22-17A13 13 0 1 1 32 13a13 13 0 1 1 22 25C47 45 32 55 32 55z' fill='%23fff'/%3E%3C/svg%3E"/>
+  <meta name="theme-color" content="#efe9ff"/>
+  <meta property="og:title" content="Mercy Watch – Mobile Hospital"/>
+  <meta property="og:description" content="Vitals, pill compartment, AI assistant, SOS, BLE devices."/>
+  <meta property="og:type" content="website"/>
+
   <style>
     :root{
-      --bg:#0f0f14;
-      --card:#151521;
-      --ink:#f7f7fb;
-      --muted:#b7b2c8;
-      --brand:#b598ff; /* soft violet */
-      --brand-strong:#8b5cf6; /* stronger violet */
+      /* Light (default) — very light violets, no black */
+      --bg:#ffffff;
+      --ink:#2b2452;           /* purple ink (no black) */
+      --muted:#6f6591;
+      --card:#f7f3ff;          /* very light violet cards */
+      --chip:#fbf9ff;
+      --brand:#7c3aed;         /* main violet */
+      --brand-soft:#efe9ff;    /* soft violet background */
       --ok:#22c55e;
       --warn:#f59e0b;
       --danger:#ef4444;
-      --shadow:0 10px 30px rgba(0,0,0,.35);
+      --shadow:0 8px 24px rgba(124,58,237,.10);
       --radius:18px;
     }
+    [data-theme="dark"]{
+      --bg:#0f0f14;
+      --ink:#f3f1ff;
+      --muted:#bdb7d6;
+      --card:#151521;
+      --chip:#1a1828;
+      --brand:#b598ff;
+      --brand-soft:#251f3b;
+      --shadow:0 10px 30px rgba(0,0,0,.35);
+    }
+
     *{box-sizing:border-box}
     html,body{height:100%}
     body{
-      margin:0; background:var(--bg); color:var(--ink);
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, "Noto Sans", sans-serif;
-      -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
+      margin:0;background:var(--bg);color:var(--ink);
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,"Noto Sans",Arial,sans-serif;
+      -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
     }
-    .app{min-height:100%; display:flex; flex-direction:column}
+
+    /* Top bar */
     header{
-      position:sticky; top:0; z-index:10;
-      background:linear-gradient(135deg, var(--card) 0%, #1f1b2e 100%);
-      border-bottom-left-radius:22px; border-bottom-right-radius:22px;
-      padding:18px 16px 26px; box-shadow:var(--shadow)
+      position:sticky;top:0;z-index:20;
+      background:linear-gradient(135deg,var(--brand-soft),#ffffff);
+      padding:14px 16px 18px;border-bottom-left-radius:22px;border-bottom-right-radius:22px;
+      box-shadow:var(--shadow)
     }
-    .title{display:flex; align-items:center; gap:12px}
-    .logo{width:40px;height:40px;border-radius:50%;background:#201a33; display:grid; place-items:center;}
-    .logo svg{width:24px;height:24px; color:var(--brand)}
-    .subtitle{margin-top:4px;color:#d9d2ff;font-size:14px}.right{margin-inline-start:auto; display:flex; gap:10px; align-items:center}
-.toggle{background:#201a33; color:#dcd6ff; border:1px solid #2b2540; padding:8px 10px; border-radius:12px; cursor:pointer}
+    .row{display:flex;align-items:center;justify-content:space-between;gap:12px}
+    .title{display:flex;align-items:center;gap:10px}
+    .logo{width:40px;height:40px;border-radius:50%;background:var(--brand-soft);display:grid;place-items:center}
+    .logo svg{width:24px;height:24px;color:var(--brand)}
+    .subtitle{font-size:13px;color:var(--muted)}
 
-main{padding:16px; padding-bottom:120px}
-.grid{display:grid; gap:12px; grid-template-columns: repeat(2, minmax(0,1fr));}
-@media (min-width:720px){ .grid{grid-template-columns: repeat(4, minmax(0,1fr));} main{max-width:1100px; margin:0 auto} }
+    /* Drawer (top menu) */
+    .menu-btn{appearance:none;border:none;background:var(--brand);color:#fff;
+      border-radius:12px;padding:8px 12px;font-weight:700;cursor:pointer}
+    .drawer{
+      position:fixed;inset-inline:0;top:-100%;background:var(--card);color:var(--ink);
+      border-bottom-left-radius:20px;border-bottom-right-radius:20px;box-shadow:var(--shadow);
+      transition:top .28s ease;z-index:30;padding:16px
+    }
+    .drawer.open{top:0}
+    .drawer h3{margin:0 0 10px 0}
+    .profile{display:grid;gap:10px;grid-template-columns:repeat(2,minmax(0,1fr))}
+    .profile label{font-size:12px;color:var(--muted)}
+    .profile input{
+      width:100%;padding:10px;border-radius:12px;border:1px solid #ded6ff;background:#fff;color:var(--ink)
+    }
+    .links{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
+    .chip{background:var(--chip);border:1px solid #e8e0ff;color:var(--ink);padding:8px 10px;border-radius:999px;font-size:12px}
 
-.card{background:var(--card); border-radius:var(--radius); padding:14px; box-shadow:var(--shadow); border:1px solid #232138}
-.card h3{margin:0 0 6px 0; font-size:14px; color:var(--muted)}
-.value{font-size:24px; font-weight:800}
-.tag{display:inline-flex; align-items:center; gap:6px; font-size:12px; padding:4px 8px; border-radius:999px; background:#0e0d15; color:var(--muted); box-shadow:var(--shadow); border:1px solid #26233c}
+    main{padding:16px;padding-bottom:120px}
+    .grid{display:grid;gap:12px;grid-template-columns:repeat(2,minmax(0,1fr))}
+    @media (min-width:720px){.grid{grid-template-columns:repeat(4,minmax(0,1fr))} main{max-width:1100px;margin:0 auto}}
+    .section{margin-top:16px}
+    .section h2{margin:0 0 10px 0;font-size:16px}
 
-.row{display:flex; align-items:center; justify-content:space-between; gap:12px}
+    /* Cards */
+    .card{background:var(--card);border-radius:var(--radius);padding:14px;box-shadow:var(--shadow);border:1px solid #eee6ff}
+    .card h3{margin:0 0 6px 0;font-size:14px;color:var(--muted)}
+    .value{font-size:24px;font-weight:800}
+    .tag{display:inline-flex;align-items:center;gap:6px;font-size:12px;padding:4px 8px;border-radius:999px;background:#fff;color:var(--muted);border:1px solid #eee6ff}
 
-.section{margin-top:16px}
-.section h2{font-size:16px; margin:0 0 10px 0; color:#eae6ff}
+    .actions{display:flex;gap:10px;flex-wrap:wrap}
+    button,.btn{appearance:none;border:none;cursor:pointer;border-radius:14px;padding:12px 14px;font-weight:800;background:var(--brand);color:#fff;box-shadow:var(--shadow)}
+    button.secondary{background:#fff;color:var(--brand);border:1px solid #e7ddfa}
+    button.ghost{background:transparent;color:var(--brand);border:1px dashed var(--brand)}
+    .row-sb{display:flex;align-items:center;justify-content:space-between;gap:10px}
+    .bar{display:flex;gap:10px;flex-wrap:wrap;margin:8px 0}
 
-.actions{display:flex; gap:10px; flex-wrap:wrap}
-button, .btn{appearance:none; border:none; cursor:pointer; border-radius:14px; padding:12px 14px; font-weight:800; background:var(--brand-strong); color:#07060d; box-shadow:var(--shadow)}
-button.secondary{background:#0e0d15; color:var(--brand); border:1px solid #2b2540}
-button.ghost{background:transparent; color:var(--brand); border:1px dashed var(--brand)}
+    /* Floating SOS button on side */
+    .fab-sos{
+      position:fixed;right:16px;bottom:84px;z-index:40;
+      background:var(--danger);color:#fff;border:none;padding:16px;border-radius:18px;
+      box-shadow:var(--shadow);font-weight:900
+    }
 
-.sos{position:fixed; inset-inline:16px; bottom:16px; z-index:20; display:flex; gap:12px; align-items:center; justify-content:space-between; background:#0e0d15; border:2px solid var(--brand); color:var(--brand); border-radius:20px; padding:14px 16px; box-shadow:var(--shadow)}
-.sos .big{background:var(--danger); color:#fff; border:none; padding:14px 18px; border-radius:16px; font-size:16px}
+    /* Toast */
+    .toast{position:fixed;top:14px;left:50%;transform:translateX(-50%);background:#6c56a5;color:#fff;padding:10px 14px;border-radius:999px;font-size:12px;opacity:0;pointer-events:none;transition:opacity .25s}
+    .toast.show{opacity:1}
 
-.pill-box{display:flex; align-items:center; gap:10px}
-.pill-status{padding:6px 10px; border-radius:999px; background:#0e0d15; box-shadow:var(--shadow); font-size:12px; border:1px solid #26233c}
-
-.records-list{display:grid; gap:8px}
-.record{background:#0e0d15; border:1px solid #232138; padding:10px; border-radius:12px}
-
-.toast{position:fixed; top:14px; left:50%; transform:translateX(-50%); background:#111; color:#fff; padding:10px 14px; border-radius:999px; font-size:12px; opacity:0; pointer-events:none; transition:opacity .25s ease}
-.toast.show{opacity:1}
-
-.assistant{display:flex; align-items:center; gap:10px}
-.assistant input{flex:1; padding:10px 12px; border-radius:12px; border:1px solid #2b2540; background:#0e0d15; color:#fff}
-
-.map-link{color:var(--brand); text-decoration:none}
-
+    /* Assistant */
+    .assistant{display:flex;align-items:center;gap:10px}
+    .assistant input{flex:1;padding:12px;border-radius:12px;border:1px solid #e5def6;background:#fff;color:var(--ink)}
   </style>
 </head>
 <body>
-<div class="app">
+  <!-- Drawer -->
+  <div id="drawer" class="drawer" aria-hidden="true">
+    <h3>Profile</h3>
+    <div class="profile">
+      <div><label>Name</label><input id="pName" placeholder="Rahma Rmadan"></div>
+      <div><label>Age</label><input id="pAge" type="number" placeholder="32"></div>
+      <div><label>Weight (kg)</label><input id="pWeight" type="number" placeholder="65"></div>
+      <div><label>Water (cups)</label><input id="pWater" type="number" placeholder="8"></div>
+      <div><label>Food (notes)</label><input id="pFood" placeholder="Low sugar"></div>
+    </div>
+
+    <!-- Medical Record inside drawer only -->
+    <div class="card" style="margin-top:12px">
+      <h3 id="tMR">Medical Record (latest 5)</h3>
+      <div id="recordsList">No notes yet.</div>
+      <div class="bar">
+        <button class="secondary" id="addNoteBtn">Add Note</button>
+        <button class="secondary" id="shareRecord">Share</button>
+        <button class="secondary" id="enableNotif">Medicine Reminder</button>
+        <button class="secondary" id="langBtn">العربية / EN</button>
+        <button class="secondary" id="themeBtn">Theme</button>
+        <button class="secondary" id="closeDrawer">Close</button>
+      </div>
+    </div>
+
+    <div class="links" style="margin-top:10px">
+      <a class="chip" href="#about">About</a>
+      <button class="chip" id="saveProfile">Save</button>
+    </div>
+  </div>
+
+  <!-- Top bar -->
   <header>
     <div class="row">
       <div class="title">
         <div class="logo" aria-hidden="true">
-          <!-- simple heart icon -->
-          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-            <path d="M12 21s-6.5-4.35-9.5-7.35A5.5 5.5 0 1 1 12 5a5.5 5.5 0 1 1 9.5 8.65C18.5 16.65 12 21 12 21z"/>
-          </svg>
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 21s-6.5-4.35-9.5-7.35A5.5 5.5 0 1 1 12 5a5.5 5.5 0 1 1 9.5 8.65C18.5 16.65 12 21 12 21z"/></svg>
         </div>
         <div>
-          <div style="font-weight:900; font-size:20px">Mercy Watch</div>
-          <div class="subtitle">A mobile hospital on your wrist</div>
+          <div style="font-weight:900;font-size:20px">Mercy Watch</div>
+          <div class="subtitle" id="subt">A mobile hospital on your wrist</div>
         </div>
       </div>
-      <div class="right">
-        <button class="toggle" id="themeBtn" title="Toggle Light/Dark">Dark • Light</button>
+      <div class="row">
+        <button class="menu-btn" id="menuBtn">☰ Menu</button>
       </div>
     </div>
-  </header>  <main>
+  </header>
+
+  <main>
     <!-- Vitals -->
     <div class="section">
-      <h2>Vital Signs</h2>
+      <h2 id="tVitals">Vital Signs</h2>
       <div class="grid">
-        <div class="card" id="bpCard">
-          <div class="row"><h3>Blood Pressure</h3><span class="tag" id="bpTag">—</span></div>
-          <div class="value" id="bpVal">120/80</div>
-        </div>
-        <div class="card" id="hrCard">
-          <div class="row"><h3>Heart Rate (bpm)</h3><span class="tag" id="hrTag">—</span></div>
-          <div class="value" id="hrVal">72</div>
-        </div>
-        <div class="card" id="glCard">
-          <div class="row"><h3>Glucose (mmol/L)</h3><span class="tag" id="glTag">—</span></div>
-          <div class="value" id="glVal">5.6</div>
-        </div>
-        <div class="card" id="spoCard">
-          <div class="row"><h3>SpO₂</h3><span class="tag" id="spoTag">—</span></div>
-          <div class="value" id="spoVal">98%</div>
-        </div>
+        <div class="card"><div class="row-sb"><h3 id="tBP">Blood Pressure</h3><span class="tag" id="bpTag">—</span></div><div class="value" id="bpVal">120/80</div></div>
+        <div class="card"><div class="row-sb"><h3 id="tHR">Heart Rate (bpm)</h3><span class="tag" id="hrTag">—</span></div><div class="value" id="hrVal">72</div></div>
+        <div class="card"><div class="row-sb"><h3 id="tGL">Glucose (mmol/L)</h3><span class="tag" id="glTag">—</span></div><div class="value" id="glVal">5.6</div></div>
+        <div class="card"><div class="row-sb"><h3 id="tSPO">SpO₂</h3><span class="tag" id="spoTag">—</span></div><div class="value" id="spoVal">98%</div></div>
       </div>
       <div class="actions" style="margin-top:10px">
         <button class="secondary" id="refreshBtn">Refresh</button>
         <button class="ghost" id="saveVitals">Save to Medical Record</button>
+        <!-- Generic BLE -->
+        <button class="secondary" id="bleScan">Scan & Connect (BLE)</button>
       </div>
-    </div><!-- Pill compartment & Medical card slot -->
-<div class="section">
-  <h2>Pill Compartment & “Medical Record” Card</h2>
-  <div class="card">
-    <div class="row pill-box">
-      <div>
-        <strong>Pill Compartment:</strong>
-        <span class="pill-status" id="pillState">Locked</span>
+
+      <!-- Nearby devices list -->
+      <div id="bleDevices" class="card" style="margin-top:8px; display:none">
+        <h3 id="tNearby">Nearby devices</h3>
+        <div id="bleList" style="font-size:14px;color:var(--muted)">Scanning…</div>
       </div>
-      <button id="pillButton" title="Long-press to open">Open (Long Press)</button>
     </div>
-    <div style="margin-top:10px" class="row">
-      <div><strong>Card Slot:</strong> “Medical Record”</div>
-      <button class="secondary" id="addNoteBtn">Add Note</button>
-    </div>
-    <div id="records" class="records-list" style="margin-top:10px"></div>
-  </div>
-</div>
 
-<!-- AI Voice Assistant -->
-<div class="section">
-  <h2>AI Voice Medical Assistant</h2>
-  <div class="card assistant">
-    <input id="assistantInput" placeholder="Ask: When is my pill time? How to sleep better?"/>
-    <button id="speakBtn">Reply</button>
-    <button class="secondary" id="micBtn">🎙️</button>
-  </div>
-  <div id="assistantOut" style="margin-top:8px; color:var(--muted)"></div>
-</div>
+    <!-- Pill compartment -->
+    <div class="section">
+      <h2 id="tPillCard">Pill Compartment</h2>
+      <div class="card">
+        <div class="row-sb">
+          <div><strong id="tPill">Pill Compartment:</strong> <span class="tag" id="pillState">Locked</span></div>
+          <button id="pillButton" title="Long-press to open">Open (Long Press)</button>
+        </div>
+      </div>
+    </div>
 
-<!-- Location & Emergency -->
-<div class="section">
-  <h2>Location & Emergency</h2>
-  <div class="card">
-    <div class="row">
-      <div id="geoStatus">Location not acquired yet.</div>
-      <button id="locBtn" class="secondary">Get Location</button>
+    <!-- AI Assistant -->
+    <div class="section">
+      <h2>AI Medical Assistant</h2>
+      <div class="card assistant">
+        <input id="assistantInput" placeholder="How are you today? What worries you today?"/>
+        <button id="speakBtn">Reply</button>
+        <button class="secondary" id="micBtn">🎙️</button>
+      </div>
+      <div id="assistantOut" style="margin-top:8px;color:var(--muted)"></div>
     </div>
-    <div style="margin-top:8px">
-      <a id="mapLink" class="map-link" target="_blank" rel="noopener"></a>
-    </div>
-  </div>
-</div>
 
-  </main>  <!-- SOS bar -->  <div class="sos" role="region" aria-label="Emergency bar">
-    <div style="display:flex;align-items:center;gap:10px">
-      <strong>Emergency</strong>
-      <span style="font-size:12px;color:var(--muted)">Instant call to EMS or family</span>
+    <!-- About -->
+    <div class="section" id="about">
+      <h2>About</h2>
+      <div class="card">Mercy Watch — Mobile hospital on your wrist. Designed by Rahma Rmadan.</div>
     </div>
-    <div class="actions">
-      <a class="btn big" href="tel:112">SOS</a>
-      <button class="secondary" id="shareBtn">Share Status</button>
-    </div>
-  </div>  <div class="toast" id="toast" role="status" aria-live="polite"></div>
-</div><script>
-// Quick DOM
+  </main>
+
+  <!-- Floating SOS (auto country-aware) -->
+  <button class="fab-sos" id="sosBtn" title="Emergency call">SOS</button>
+
+  <!-- Toast -->
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+/* Helpers */
 const $ = s => document.querySelector(s);
 const toast = (m)=>{const t=$('#toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),1800)}
+document.documentElement.dataset.theme='light';
 
-// Theme toggle (persist to localStorage)
-(function initTheme(){
-  const saved = localStorage.getItem('mw-theme');
-  if(saved==='light') setLight();
-})();
-$('#themeBtn').addEventListener('click',()=>{
-  const isLight = document.documentElement.dataset.theme==='light';
-  if(isLight){ setDark(); } else { setLight(); }
+/* Drawer */
+const drawer = $('#drawer');
+$('#menuBtn').addEventListener('click',()=> drawer.classList.add('open'));
+$('#closeDrawer')?.addEventListener('click',()=> drawer.classList.remove('open'));
+$('#saveProfile').addEventListener('click',()=>{
+  const data = {name:$('#pName').value, age:$('#pAge').value, weight:$('#pWeight').value, water:$('#pWater').value, food:$('#pFood').value};
+  localStorage.setItem('mw-profile', JSON.stringify(data));
+  toast('Profile saved'); drawer.classList.remove('open');
 });
-function setLight(){
-  document.documentElement.dataset.theme='light';
-  const s = document.documentElement.style;
-  s.setProperty('--bg','#ffffff');
-  s.setProperty('--card','#f7f5fb');
-  s.setProperty('--ink','#1f1b2e');
-  s.setProperty('--muted','#6b6282');
-  s.setProperty('--brand','#6a0dad');
-  s.setProperty('--brand-strong','#7c3aed');
-  s.setProperty('--shadow','0 6px 20px rgba(0,0,0,.08)');
-  localStorage.setItem('mw-theme','light');
-}
-function setDark(){
-  document.documentElement.dataset.theme='dark';
-  const s = document.documentElement.style;
-  s.setProperty('--bg','#0f0f14');
-  s.setProperty('--card','#151521');
-  s.setProperty('--ink','#f7f7fb');
-  s.setProperty('--muted','#b7b2c8');
-  s.setProperty('--brand','#b598ff');
-  s.setProperty('--brand-strong','#8b5cf6');
-  s.setProperty('--shadow','0 10px 30px rgba(0,0,0,.35)');
-  localStorage.setItem('mw-theme','dark');
-}
+(function loadProfile(){
+  const d = JSON.parse(localStorage.getItem('mw-profile')||'{}');
+  if(d.name) $('#pName').value=d.name;
+  if(d.age) $('#pAge').value=d.age;
+  if(d.weight) $('#pWeight').value=d.weight;
+  if(d.water) $('#pWater').value=d.water;
+  if(d.food) $('#pFood').value=d.food;
+})();
 
-// Vitals simulation
+/* Vitals (sim if no device) */
 function rand(min,max){return Math.round(Math.random()*(max-min)+min)}
 function updateVitals(){
   const sys = rand(105,135), dia = rand(65,88);
@@ -225,90 +257,147 @@ function updateVitals(){
   $('#hrVal').textContent = hr;
   $('#glVal').textContent = gl;
   $('#spoVal').textContent = `${spo}%`;
-  tag('#bpTag', (sys<135 && dia<85) ? 'Normal' : 'High', (sys<135 && dia<85) ? 'ok' : 'warn');
-  tag('#hrTag', (hr>=60 && hr<=100) ? 'Normal' : 'Alert', (hr>=60 && hr<=100) ? 'ok' : 'warn');
-  tag('#glTag', (gl>=4.0 && gl<=7.0) ? 'Normal' : 'Alert', (gl>=4.0 && gl<=7.0) ? 'ok' : 'warn');
-  tag('#spoTag', (spo>=95) ? 'Good' : 'Alert', (spo>=95) ? 'ok' : 'warn');
+  tag('#bpTag', (sys<135 && dia<85) ? 'Normal' : 'High');
+  tag('#hrTag', (hr>=60 && hr<=100) ? 'Normal' : 'Alert');
+  tag('#glTag', (gl>=4.0 && gl<=7.0) ? 'Normal' : 'Alert');
+  tag('#spoTag', (spo>=95) ? 'Good' : 'Alert');
 }
-function tag(sel, txt, level){ const el=$(sel); el.textContent=txt; el.style.color = level==='ok' ? 'var(--ok)' : level==='warn' ? 'var(--warn)' : 'var(--muted)'; }
+function tag(sel, txt){ const el=$(sel); el.textContent=txt; el.style.color = (txt==='Normal'||txt==='Good')?'var(--ok)':'var(--warn)'; }
 $('#refreshBtn').addEventListener('click', ()=>{ updateVitals(); toast('Vitals refreshed') })
 
-// Save vitals to localStorage
+/* Save vitals into record (drawer) */
+function renderRecords(){
+  const wrap = $('#recordsList'); if(!wrap) return;
+  wrap.innerHTML='';
+  const arr = JSON.parse(localStorage.getItem('records')||'[]');
+  if(!arr.length){ wrap.textContent = (lang==='ar'?'لا توجد ملاحظات بعد.':'No notes yet.'); return }
+  arr.slice(0,5).forEach(r=>{
+    const d=document.createElement('div'); d.style.padding='6px 0'; d.textContent = `${r.t} — ${r.note}`; wrap.appendChild(d);
+  })
+}
 $('#saveVitals').addEventListener('click', ()=>{
   const note = `BP:${$('#bpVal').textContent}, HR:${$('#hrVal').textContent}, GL:${$('#glVal').textContent}, SpO2:${$('#spoVal').textContent}`;
   const arr = JSON.parse(localStorage.getItem('records')||'[]');
   arr.unshift({ t:new Date().toLocaleString(), note });
   localStorage.setItem('records', JSON.stringify(arr));
-  renderRecords(); toast('Saved to Medical Record')
+  renderRecords(); toast(lang==='ar'?'تم الحفظ':'Saved')
 })
-
-function renderRecords(){
-  const wrap = $('#records'); wrap.innerHTML='';
+$('#addNoteBtn')?.addEventListener('click', ()=>{
+  const txt = prompt(lang==='ar'?'أضف ملاحظة قصيرة:':'Add a short note:'); if(!txt) return;
   const arr = JSON.parse(localStorage.getItem('records')||'[]');
-  if(!arr.length){ wrap.innerHTML = '<div class="record">No notes yet.</div>'; return }
-  arr.slice(0,5).forEach(r=>{
-    const d=document.createElement('div'); d.className='record'; d.textContent = `${r.t} — ${r.note}`; wrap.appendChild(d);
-  })
-}
-$('#addNoteBtn').addEventListener('click', ()=>{
-  const txt = prompt('Add a short note to your medical record:');
-  if(!txt) return; const arr = JSON.parse(localStorage.getItem('records')||'[]');
   arr.unshift({ t:new Date().toLocaleString(), note: txt });
-  localStorage.setItem('records', JSON.stringify(arr));
-  renderRecords();
+  localStorage.setItem('records', JSON.stringify(arr)); renderRecords();
 })
+/* Share medical record */
+$('#shareRecord')?.addEventListener('click', ()=>{
+  const arr = JSON.parse(localStorage.getItem('records')||'[]');
+  if(!arr.length){ toast(lang==='ar'?'لا يوجد سجل لمشاركته':'No record to share'); return }
+  const text = arr.map(r=> `${r.t}: ${r.note}`).join('\n');
+  if(navigator.share){
+    navigator.share({ title:'Medical Record', text })
+      .catch(()=> toast(lang==='ar'?'تم إلغاء المشاركة':'Share cancelled'));
+  }else{
+    navigator.clipboard.writeText(text).then(()=> toast(lang==='ar'?'تم النسخ للحافظة':'Copied to clipboard'));
+  }
+});
 
-// Pill compartment
-let pressTimer=null; let isOpen=false;
-const pillBtn = $('#pillButton'); const pillState=$('#pillState');
-function setPill(open){ isOpen=open; pillState.textContent = open? 'Open (10s)': 'Locked'; pillState.style.color = open? 'var(--warn)':'inherit' }
+/* Pill compartment (long press) */
+let pressTimer=null;
+const pillBtn = $('#pillButton'), pillState=$('#pillState');
+function setPill(open){ pillState.textContent = open? (lang==='ar'?'مفتوحة (10 ثوانٍ)':'Open (10s)') : (lang==='ar'?'مقفلة':'Locked');
+  pillState.style.color = open? 'var(--warn)':'var(--muted)' }
 ['mousedown','touchstart'].forEach(evn=> pillBtn.addEventListener(evn, ()=>{
-  pressTimer = setTimeout(()=>{ setPill(true); toast('Pill compartment opened manually'); setTimeout(()=>setPill(false), 10000) }, 1200);
-}))
-['mouseup','mouseleave','touchend','touchcancel'].forEach(evn=> pillBtn.addEventListener(evn, ()=>{ clearTimeout(pressTimer) }))
+  pressTimer=setTimeout(()=>{ setPill(true); toast(lang==='ar'?'تم فتح الحجرة':'Pill opened'); setTimeout(()=>setPill(false),10000)},1200);
+}));
+['mouseup','mouseleave','touchend','touchcancel'].forEach(evn=> pillBtn.addEventListener(evn, ()=> clearTimeout(pressTimer)));
 
-// Assistant (basic rules + TTS + Speech Recognition)
-const answers = {
-  'pill':'Please take your medication on time. If you feel dizzy, contact your doctor.',
-  'glucose':'Monitor glucose regularly and keep hydrated. For sudden drops, follow your doctor plan.',
-  'pressure':'Sit and relax for 5 minutes, then re-check blood pressure.',
-  'sleep':'Keep a regular sleep schedule and reduce caffeine after noon.'
+/* SOS: auto number by country */
+const EMERGENCY_MAP = {
+  "US": "911","CA":"911","GB":"999","UK":"999","IE":"112","FR":"112","DE":"112","IT":"112","ES":"112","SE":"112","NL":"112",
+  "SA":"997","AE":"998","QA":"999","KW":"112","BH":"999","OM":"9999","IQ":"115","EG":"123","TN":"190","MA":"150"
+};
+function setSOS(number){ const btn=$('#sosBtn'); if(btn) btn.onclick=()=> location.href=`tel:${number}`; }
+function guessCountryByLocale(){ const loc=navigator.language||'en-US'; const part=loc.split('-')[1]; return part?part.toUpperCase():null; }
+async function updateSOSByLocation(){
+  setSOS("112"); // default
+  const byLocale = guessCountryByLocale();
+  if (byLocale && EMERGENCY_MAP[byLocale]) setSOS(EMERGENCY_MAP[byLocale]);
+  if(navigator.geolocation){
+    navigator.geolocation.getCurrentPosition(async pos=>{
+      const {latitude, longitude}=pos.coords;
+      try{
+        const url=`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=en`;
+        const r=await fetch(url,{cache:'no-store'});
+        if(r.ok){
+          const j=await r.json();
+          const code=(j.countryCode||j.countryCodeAlpha2||'').toUpperCase();
+          if(code && EMERGENCY_MAP[code]) setSOS(EMERGENCY_MAP[code]);
+        }
+      }catch(e){/* keep previous */}
+    }, ()=>{/* keep defaults */});
+  }
 }
-function reply(text){
-  $('#assistantOut').textContent = text; try{ speechSynthesis.cancel(); speechSynthesis.speak(new SpeechSynthesisUtterance(text)) }catch(e){}
-}
-$('#speakBtn').addEventListener('click', ()=>{
-  const q = $('#assistantInput').value.trim().toLowerCase();
-  if(!q){ reply('How can I help you today?'); return }
-  const key = Object.keys(answers).find(k=> q.includes(k));
-  reply(key? answers[key] : 'General tip: drink water, rest, and consult your physician if symptoms persist.');
-})
+updateSOSByLocation();
 
-$('#micBtn').addEventListener('click', ()=>{
-  const SR = window.SpeechRecognition || window.webkitSpeechRecognition; if(!SR){ toast('Speech recognition is not supported.'); return }
-  const r=new SR(); r.lang='en-US'; r.onresult=(e)=>{ $('#assistantInput').value = e.results[0][0].transcript; toast('Listening done') }; r.start();
-})
-
-// Geolocation
-$('#locBtn').addEventListener('click', ()=>{
-  if(!navigator.geolocation){ toast('Geolocation not supported'); return }
-  navigator.geolocation.getCurrentPosition(pos=>{
-    const {latitude, longitude} = pos.coords;
-    $('#geoStatus').textContent = `Current location: ${latitude.toFixed(5)}, ${longitude.toFixed(5)}`;
-    const url = `https://maps.google.com/?q=${latitude},${longitude}`;
-    const a=$('#mapLink'); a.textContent = 'Open in Maps'; a.href=url; toast('Location acquired')
-  }, ()=> toast('Failed to get location'))
-})
-
-// Share
-$('#shareBtn').addEventListener('click', async()=>{
+/* Notifications with sound (and Capacitor support if available) */
+function playBeep(){
   try{
-    if(navigator.share){ await navigator.share({ title:'Mercy Watch', text:'Medical emergency — please help', url: location.href }); toast('Shared') }
-    else{ toast('Share API not supported') }
-  }catch(e){ toast('Share cancelled') }
-})
+    const ctx = new (window.AudioContext||window.webkitAudioContext)();
+    const o = ctx.createOscillator(); const g = ctx.createGain();
+    o.type="sine"; o.frequency.value=880; o.connect(g); g.connect(ctx.destination);
+    g.gain.setValueAtTime(0.001, ctx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.3, ctx.currentTime + 0.02);
+    o.start();
+    setTimeout(()=>{ o.frequency.value=660; },200);
+    setTimeout(()=>{ o.frequency.value=440; },400);
+    setTimeout(()=>{ g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.05); o.stop(ctx.currentTime + 0.08); },600);
+  }catch(e){}
+}
+async function scheduleMedicineReminder(){
+  const Cap = window.Capacitor && window.Capacitor.Plugins;
+  const LN = Cap && (Cap.LocalNotifications || Cap.LocalNotification || Cap.Notifications);
+  if(LN && window.Capacitor?.isNativePlatform){
+    try{
+      const minutes = prompt('Medicine reminder after how many minutes?', '1'); if(!minutes) return;
+      const inMs = Number(minutes)*60*1000;
+      await LN.requestPermissions();
+      await (LN.schedule ? LN.schedule({
+        notifications:[{ id:Date.now()%2147483647, title:'Medicine Reminder', body:'It is time to take your medicine.', schedule:{ at: new Date(Date.now()+inMs) } }]
+      }) : LN.send({ title:'Medicine Reminder', body:'It is time to take your medicine.' }));
+      toast('Reminder scheduled');
+    }catch(e){ toast('Capacitor notifications failed'); }
+    return;
+  }
+  try{
+    let perm = Notification.permission;
+    if(perm!=='granted'){ perm = await Notification.requestPermission(); }
+    if(perm!=='granted'){ toast('Permission denied'); return }
+    const minutes = prompt('Medicine reminder after how many minutes?', '1'); if(!minutes) return;
+    toast('Reminder scheduled');
+    setTimeout(()=>{ new Notification('Medicine Reminder',{ body:'It is time to take your medicine.' }); playBeep(); }, Number(minutes)*60*1000);
+  }catch(e){ toast('Notifications unavailable'); }
+}
+$('#enableNotif')?.addEventListener('click', scheduleMedicineReminder);
 
-// Init
-updateVitals(); renderRecords();
-</script></body>
-</html>
+/***********************  Generic BLE Support (multi-device)  *************************/
+const GATT = {
+  HEART_RATE: { service: 'heart_rate', char: 'heart_rate_measurement' },                  // 0x180D / 0x2A37
+  BLOOD_PRESSURE: { service: 'blood_pressure', char: 'blood_pressure_measurement' },      // 0x1810 / 0x2A35
+  PULSE_OX: { service: 0x1822, char: 0x2A5F },                                            // PLX Continuous (may vary)
+  GLUCOSE: { service: 'glucose', char: 'glucose_measurement', racp: 'record_access_control_point' }, // 0x1808 / 0x2A18 / 0x2A52
+  BODY_TEMP: { service: 'health_thermometer', char: 'temperature_measurement' },          // 0x1809 / 0x2A1C
+  WEIGHT: { service: 0x181D, char: 0x2A9D },                                              // 0x181D / 0x2A9D
+};
+function sfloat16FromDV(dv, i){
+  const raw = dv.getUint16(i, true);
+  let mantissa = raw & 0x0FFF, exp = raw >> 12;
+  if (mantissa >= 0x0800) mantissa -= 0x1000;
+  if (exp >= 0x0008) exp -= 0x0010;
+  return { value: mantissa * Math.pow(10, exp), next: i+2 };
+}
+function parseHeartRate(dv){ const flags=dv.getUint8(0); return (flags&0x01)? dv.getUint16(1,true): dv.getUint8(1); }
+function parseBloodPressure(dv){ let i=1; const a=sfloat16FromDV(dv,i); i=a.next; const b=sfloat16FromDV(dv,i); i=b.next; const c=sfloat16FromDV(dv,i); return { systolic:Math.round(a.value), diastolic:Math.round(b.value), map:Math.round(c.value)}; }
+function parseGlucose(dv){ const flags=dv.getUint8(0); let i=1; const seq=dv.getUint16(i,true); i+=2; i+=7; if(flags&0x01) i+=2; let mmol=null; if(flags&0x02){ const f=sfloat16FromDV(dv,i); i=f.next; const mgdl=f.value*100000; mmol=mgdl/18.0; i+=1; } return { seq, mmol }; }
+function parsePulseOx(dv){ try{ const flags=dv.getUint8(0); const spo=dv.getUint8(1); return spo; }catch{ return null; } }
+function parseBodyTemp(dv){ try{ const f=sfloat16FromDV(dv,1); return f.value; }catch{ return null; } }
+function parseWeight(dv){ try{ const raw=dv.getUi
